@@ -228,7 +228,7 @@ def draw_image(
 def generate_dataset(num_images, image_size, images_dir, labels_dir, font_type="Arial Unicode"):
     for i in range(num_images):
     
-        shape_type = random.choice(shapes)
+        shape_type = "star"
         character = random.choice(characters)
         
         # Draw the shape that fits 50-70% of the image
@@ -275,7 +275,7 @@ def generate_dataset(num_images, image_size, images_dir, labels_dir, font_type="
 
 def main():
     
-    num_images = 1500
+    num_images = 1
     image_size = 512  # Square image
     images_dir = 'generated_images'
     labels_dir = 'labels'

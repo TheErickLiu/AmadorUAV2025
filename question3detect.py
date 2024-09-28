@@ -17,7 +17,7 @@ def findODLC(img_fn):
     return (shape, letter)
 
 def main():
-    path_to_img = "testimg/test4.png"
+    path_to_img = "testimg/test5.png"
     print(findODLC(path_to_img))
 
 if __name__ == "__main__":
