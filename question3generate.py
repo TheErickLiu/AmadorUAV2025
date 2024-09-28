@@ -54,26 +54,43 @@ def draw_rectangle(draw, center, size, outline="black", width=10, hw_ratio=0.66)
     draw.rectangle(xy, outline=outline, width=width)
     return xy
 
-def draw_pentagon(draw, center, size, rotation=0, outline="black", width=10):
+def angle_cos_sin(angle):
+    return math.cos(math.radians(angle)), math.sin(math.radians(angle))
+
+def draw_pentagon(draw, center, size, outline="black", width=10):
     radius = size // 2
-    draw.regular_polygon((center[0], center[1], radius), n_sides=5, rotation=rotation, outline=outline, width=width)
+    angle = 360 / 5
+    points = []
 
-    if rotation == 0:
-        y_max = center[1] + radius * math.sqrt(3/4)
-    else:
-        y_max = center[1] + radius
+    for i in range(5):
+        cos_angle, sin_angle = angle_cos_sin(angle * i)
+        x = int(center[0] + radius * cos_angle)
+        y = int(center[1] + radius * sin_angle)
+        points.append((x, y))
 
-    points = [
-        (center[0], center[1] - radius),
-        (center[0] - radius // 2, y_max),
-        (center[0] + radius // 2, y_max),
-        (center[0] - radius, center[1]),
-        (center[0] + radius, center[1]),
-    ]
+    draw.polygon(points, outline=outline, width=width)
     return calc_bounding_box(points)
 
-def draw_star(draw, center, size, outline="black", width=10):
-    return draw_pentagon(draw, center, size, rotation=30, outline=outline, width=width)
+def draw_star(draw, center, size, fill="white", outline="black", width=10):
+    angle = 360 / 5
+    radius = size // 2
+    inner_radius = radius / 2  # Adjust for inner points
+    points = []
+
+    # get five pairs of (outer, inner) points in order
+    for i in range(5):
+        outer_cos, outer_sin = angle_cos_sin(angle * i)
+        outer_x = int(center[0] + radius * outer_cos)
+        outer_y = int(center[1] + radius * outer_sin)
+        points.append((outer_x, outer_y))
+
+        inner_cos, inner_sin = angle_cos_sin(angle * i + angle / 2)
+        inner_x = int(center[0] + inner_radius * inner_cos)
+        inner_y = int(center[1] + inner_radius * inner_sin)
+        points.append((inner_x, inner_y))
+
+    draw.polygon(points, fill=fill, outline=outline, width=width)
+    return calc_bounding_box(points)
 
 def draw_cross(draw, center, size, outline="black", width=5):
     size = size // 3
@@ -83,7 +100,6 @@ def draw_cross(draw, center, size, outline="black", width=5):
     w = size * 3 // 2
     bbox = (center[0] - w, center[1] - w, center[0] + w, center[1] + w)
     return bbox
-
 
 def draw_shape(draw, shape, center, size, outline="black", width=10):
     """Draw a shape with center and size"""
@@ -226,7 +242,7 @@ def generate_dataset(num_images, image_size, images_dir, labels_dir, font_type="
 
         # Draw the character with a random ratio to the shape 
         char_ratio = random.randint(40, 70) / 100
-        if shape_type == "cross":
+        if shape_type in ["star", "cross"]:
             char_ratio = random.randint(30, 50) / 100
 
         # Draw the character at the shape center with a random shift
@@ -259,7 +275,7 @@ def generate_dataset(num_images, image_size, images_dir, labels_dir, font_type="
 
 def main():
     
-    num_images = 3
+    num_images = 1500
     image_size = 512  # Square image
     images_dir = 'generated_images'
     labels_dir = 'labels'
