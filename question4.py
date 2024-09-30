@@ -106,6 +106,7 @@ async def run():
     print("Arming ...\n")
     await drone.action.arm()
 
+    print("Starting Mission ...\n")
     await drone.mission.start_mission()
 
     # Monitor mission progress
